@@ -1,6 +1,49 @@
 import Image from "next/image";
 
-export default function Home() {
+const query: string = `{
+  "query": "{
+    products(first: 3) {
+      edges {
+        node {
+          id
+          title
+        }
+      }
+    }
+  }"
+}`;
+
+async function fetchProducts() {
+  const endpoint = process.env.SHOPIFY_STORE_DOMAIN;
+  const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+
+  try {
+    const result = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": key,
+      },
+      body: query,
+    });
+
+    return {
+      status: result.status,
+      body: await result.json(),
+    };
+  } catch (error) {
+    console.error("Error:", error);
+    return {
+      status: 500,
+      error: error,
+    };
+  }
+}
+
+export default async function Home() {
+  const products = await fetchProducts();
+  const results = products.body.data.products.edges || [];
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -12,6 +55,18 @@ export default function Home() {
           height={38}
           priority
         />
+        {results.length && (
+          <ul>
+            <li>{JSON.stringify(results)}</li>
+            {results.map((product) => {
+              <div>
+                <li>product</li>
+                <li>{JSON.stringify(product)}</li>
+                <li>{product.node.title}</li>;
+              </div>;
+            })}
+          </ul>
+        )}
         <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2">
             Get started by editing{" "}
@@ -22,7 +77,6 @@ export default function Home() {
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
-
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
