@@ -1,5 +1,5 @@
 # unfinished-knits
-e-commerce website sell unfinished needleworks because all efforts are valueable.
+e-commerce website sell unfinished needleworks
 
 ## Features
 - browse unfinished knits
