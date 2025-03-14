@@ -1,48 +1,23 @@
 import Image from "next/image";
+import { shopify } from "./config";
 
-const query: string = `{
-  "query": "{
-    products(first: 3) {
-      edges {
-        node {
-          id
-          title
-        }
-      }
-    }
-  }"
-}`;
-
-async function fetchProducts() {
-  const endpoint = process.env.SHOPIFY_STORE_DOMAIN;
-  const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-
-  try {
-    const result = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": key,
-      },
-      body: query,
-    });
-
-    return {
-      status: result.status,
-      body: await result.json(),
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return {
-      status: 500,
-      error: error,
-    };
+const query: string = `
+query ProductQuery($handle: String) {
+  product(handle: $handle) {
+    id
+    title
+    handle
   }
 }
+`;
 
 export default async function Home() {
-  const products = await fetchProducts();
-  const results = products.body.data.products.edges || [];
+  const { data, errors } = await shopify.request(query, {
+    variables: {
+      handle: "crochet-blanket",
+    },
+  });
+  data ? console.log(data) : console.log(errors);
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -55,16 +30,9 @@ export default async function Home() {
           height={38}
           priority
         />
-        {results.length && (
+        {data && (
           <ul>
-            <li>{JSON.stringify(results)}</li>
-            {results.map((product) => {
-              <div>
-                <li>product</li>
-                <li>{JSON.stringify(product)}</li>
-                <li>{product.node.title}</li>;
-              </div>;
-            })}
+            <li>{JSON.stringify(data)}</li>
           </ul>
         )}
         <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
