@@ -7,31 +7,32 @@ query ProductsQuery {
       id
       title
       description
-      images(first: 1) {
-        nodes {
-          url
+      priceRange {
+        maxVariantPrice {
+            amount
         }
+      }
+      featuredImage {
+        url
       }
     }
   }
 }
 `;
 
-type Product = {
+type gqlProduct = {
   id: string;
   title: string;
   description: string;
-};
-
-type ProductMedia = {
-  url: string;
-};
-
-interface gqlProduct extends Product {
-  images: {
-    nodes: [ProductMedia];
+  priceRange: {
+    maxVariantPrice: {
+      amount: string;
+    };
   };
-}
+  featuredImage: {
+    url: string;
+  };
+};
 
 type ProductGqlResponse = {
   products: {
@@ -39,7 +40,11 @@ type ProductGqlResponse = {
   };
 };
 
-export interface ProductResult extends Product {
+export interface ProductResult {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
   imageURL: string;
 }
 
@@ -54,12 +59,13 @@ export default async function loadProducts(): Promise<ProductResult[]> {
   if (data) {
     const nodes = data.products.nodes;
     nodes.map((n) => {
-      const { id, title, description, images } = n;
+      const { id, title, description, featuredImage, priceRange } = n;
       list.push({
         id,
         description,
         title,
-        imageURL: images.nodes[0].url,
+        price: priceRange.maxVariantPrice.amount,
+        imageURL: featuredImage.url,
       });
     });
   }
