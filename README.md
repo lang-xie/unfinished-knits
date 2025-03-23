@@ -1,6 +1,6 @@
 # unfinished-knits
 
-e-commerce website sell unfinished needleworks
+e-commerce website sells patch needleworks
 
 ## Features
 
