@@ -9,7 +9,7 @@ export default function ProductListView({
       <h1 className="text-2xl leading-2 font-extrabold text-center bg-white hover:text-blue-700 underline decoration-blue-500 decoration-wavy underline-offset-4 uppercase mx-auto tracking-tight px-8 py-2 my-12">
         Knits for sell
       </h1>
-      <ul className="px-8 mx-auto max-w-md sm:flex sm:gap-x-16 sm:justify-start sm:gap-y-8 sm:max-w-xl md:max-w-5xl">
+      <ul className="px-8 mx-auto max-w-xs sm:flex sm:gap-x-16 sm:justify-start sm:gap-y-8 sm:max-w-xl md:max-w-5xl">
         {products.map((p) => (
           <li className="mb-6 shadow group hover:shadow-xl focus:shadow-xl rounded-2xl flex flex-col content-between bg-white px-2 py-4 sm:basis-1/2 md:basis-1/3 md:max-h-[300px] md:justify-center md:text-center">
             <img
